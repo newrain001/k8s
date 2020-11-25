@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  labels:
+    app: web-wordpress
+spec:
+  selector:
+    matchLabels:
+      app: wordpress
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - name: nginx
+          image: newrain857/wordpress:v1
+          ports:
+          - containerPort: 80
+        - name: mariadb
+          image: mariadb:5.5
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "123456"
+          - name: MYSQL_DATABASE
+            value: "wordpress"
+          volumeMounts:
+            - name: datadir
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: datadir
+          hostPath:
+            path: /data
+      resources:
+        requests: 
+          cpu: 0.5
+          memory: 100Mi 
+        limits:
+          cpu: 1  
+          memory: 200Mi  
+      nodeName: node2
